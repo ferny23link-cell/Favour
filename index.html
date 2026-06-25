@@ -2,48 +2,172 @@
 <html>
 <head>
   <title>Lavour</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+
+      /* center everything */
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 800px;
+      background: white;
+      min-height: 100vh;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .ad {
+      background: #ddd;
+      padding: 15px;
+      text-align: center;
+      margin: 10px 0;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: black;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      margin: 15px 0;
+    }
+
+    .tab {
+      padding: 8px;
+      cursor: pointer;
+      background: #eee;
+      border-radius: 6px;
+    }
+
+    .favor {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+    }
+
+    .small-ad {
+      background: #e0e0e0;
+      padding: 10px;
+      margin: 10px 0;
+      text-align: center;
+      font-size: 12px;
+    }
+  </style>
 </head>
+
 <body>
+
+<div class="container">
 
   <h1>Lavour</h1>
 
+  <!-- TOP AD -->
+  <div class="ad">AD SPACE (Top Banner)</div>
+
   <h2>Post a Favor</h2>
 
+  <select id="category">
+    <option value="all">General</option>
+    <option value="urgent">Urgent</option>
+    <option value="online">Online Tasks</option>
+    <option value="local">Local Help</option>
+  </select>
+
   <input id="title" placeholder="Title">
-  <br><br>
   <textarea id="desc" placeholder="Description"></textarea>
-  <br><br>
-  <button onclick="postFavor()">Post</button>
+
+  <button onclick="postFavor()">Post Favor</button>
+
+  <!-- MID AD -->
+  <div class="ad">AD SPACE (Middle Banner)</div>
+
+  <!-- FILTER TABS -->
+  <div class="tabs">
+    <div class="tab" onclick="filter('all')">All</div>
+    <div class="tab" onclick="filter('urgent')">Urgent</div>
+    <div class="tab" onclick="filter('online')">Online</div>
+    <div class="tab" onclick="filter('local')">Local</div>
+  </div>
 
   <h2>Favors</h2>
+
+  <div class="small-ad">AD SPACE (Side/Inline Ad)</div>
+
   <div id="favors"></div>
+
+</div>
 
 <script>
 const API = "http://localhost:3000";
+let currentFilter = "all";
 
 async function loadFavors() {
   const res = await fetch(API + "/favors");
   const data = await res.json();
 
+  let filtered = data;
+
+  if (currentFilter !== "all") {
+    filtered = data.filter(f => f.category === currentFilter);
+  }
+
   document.getElementById("favors").innerHTML =
-    data.map(f =>
-      `<div style="border:1px solid black; margin:5px; padding:5px;">
-        <h3>${f.title}</h3>
+    filtered.map(f => `
+      <div class="favor">
+        <b>${f.title}</b>
         <p>${f.description}</p>
-      </div>`
-    ).join("");
+        <small>Category: ${f.category}</small>
+      </div>
+    `).join("");
 }
 
 async function postFavor() {
   const title = document.getElementById("title").value;
   const description = document.getElementById("desc").value;
+  const category = document.getElementById("category").value;
 
   await fetch(API + "/favors", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, description })
+    body: JSON.stringify({ title, description, category })
   });
 
+  loadFavors();
+}
+
+function filter(type) {
+  currentFilter = type;
   loadFavors();
 }
 
