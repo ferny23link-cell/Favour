@@ -7,44 +7,60 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
+      background: #f4f4f4;
+    }
 
-      /* center everything */
+    .topbar {
+      background: black;
+      color: white;
+      padding: 15px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .layout {
       display: flex;
       justify-content: center;
+      margin-top: 20px;
     }
 
     .container {
-      width: 800px;
-      background: white;
-      min-height: 100vh;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 1000px;
+      display: flex;
+      gap: 15px;
     }
 
-    h1 {
-      text-align: center;
+    .sidebar {
+      width: 200px;
+      background: white;
+      padding: 10px;
+      height: fit-content;
+    }
+
+    .main {
+      flex: 1;
+    }
+
+    .card {
+      background: white;
+      padding: 10px;
       margin-bottom: 10px;
+      border-radius: 8px;
     }
 
     .ad {
       background: #ddd;
-      padding: 15px;
+      padding: 10px;
       text-align: center;
-      margin: 10px 0;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-
-    .row {
-      display: flex;
-      gap: 10px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      font-size: 12px;
     }
 
     input, textarea, select {
       width: 100%;
-      padding: 10px;
       margin: 5px 0;
+      padding: 8px;
     }
 
     button {
@@ -56,76 +72,79 @@
       cursor: pointer;
     }
 
-    .tabs {
-      display: flex;
-      justify-content: space-around;
-      margin: 15px 0;
-    }
-
-    .tab {
-      padding: 8px;
-      cursor: pointer;
-      background: #eee;
-      border-radius: 6px;
-    }
-
     .favor {
-      border: 1px solid #ccc;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 8px;
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
     }
 
-    .small-ad {
+    .smallad {
       background: #e0e0e0;
-      padding: 10px;
-      margin: 10px 0;
+      padding: 8px;
       text-align: center;
       font-size: 12px;
+      margin: 10px 0;
+    }
+
+    .category {
+      padding: 5px;
+      cursor: pointer;
+    }
+
+    .category:hover {
+      background: #eee;
     }
   </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="topbar">Lavour</div>
 
-  <h1>Lavour</h1>
+<div class="layout">
+  <div class="container">
 
-  <!-- TOP AD -->
-  <div class="ad">AD SPACE (Top Banner)</div>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <b>Categories</b>
+      <div class="category" onclick="filter('all')">All</div>
+      <div class="category" onclick="filter('urgent')">Urgent</div>
+      <div class="category" onclick="filter('online')">Online</div>
+      <div class="category" onclick="filter('local')">Local</div>
 
-  <h2>Post a Favor</h2>
+      <div class="smallad">Ad Space</div>
+    </div>
 
-  <select id="category">
-    <option value="all">General</option>
-    <option value="urgent">Urgent</option>
-    <option value="online">Online Tasks</option>
-    <option value="local">Local Help</option>
-  </select>
+    <!-- MAIN -->
+    <div class="main">
 
-  <input id="title" placeholder="Title">
-  <textarea id="desc" placeholder="Description"></textarea>
+      <div class="ad">TOP AD SPACE</div>
 
-  <button onclick="postFavor()">Post Favor</button>
+      <div class="card">
+        <h3>Post a Favor</h3>
 
-  <!-- MID AD -->
-  <div class="ad">AD SPACE (Middle Banner)</div>
+        <select id="category">
+          <option value="general">General</option>
+          <option value="urgent">Urgent</option>
+          <option value="online">Online</option>
+          <option value="local">Local</option>
+        </select>
 
-  <!-- FILTER TABS -->
-  <div class="tabs">
-    <div class="tab" onclick="filter('all')">All</div>
-    <div class="tab" onclick="filter('urgent')">Urgent</div>
-    <div class="tab" onclick="filter('online')">Online</div>
-    <div class="tab" onclick="filter('local')">Local</div>
+        <input id="title" placeholder="Title">
+        <textarea id="desc" placeholder="Description"></textarea>
+
+        <button onclick="postFavor()">Post</button>
+      </div>
+
+      <div class="ad">MIDDLE AD SPACE</div>
+
+      <div class="card">
+        <b>Feed</b>
+        <div id="favors"></div>
+      </div>
+
+    </div>
+
   </div>
-
-  <h2>Favors</h2>
-
-  <div class="small-ad">AD SPACE (Side/Inline Ad)</div>
-
-  <div id="favors"></div>
-
 </div>
 
 <script>
@@ -137,7 +156,6 @@ async function loadFavors() {
   const data = await res.json();
 
   let filtered = data;
-
   if (currentFilter !== "all") {
     filtered = data.filter(f => f.category === currentFilter);
   }
@@ -145,22 +163,26 @@ async function loadFavors() {
   document.getElementById("favors").innerHTML =
     filtered.map(f => `
       <div class="favor">
-        <b>${f.title}</b>
-        <p>${f.description}</p>
-        <small>Category: ${f.category}</small>
+        <b>${f.title}</b><br>
+        ${f.description}<br>
+        <small>${f.category}</small>
       </div>
     `).join("");
 }
 
 async function postFavor() {
   const title = document.getElementById("title").value;
-  const description = document.getElementById("desc").value;
+  const desc = document.getElementById("desc").value;
   const category = document.getElementById("category").value;
 
   await fetch(API + "/favors", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, description, category })
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      title,
+      description: desc,
+      category
+    })
   });
 
   loadFavors();
