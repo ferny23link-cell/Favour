@@ -1,200 +1,161 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Lavour</title>
+export default function Home() {
+  const favors = [
+    {
+      id: 1,
+      user: "John D.",
+      rating: 4.9,
+      title: "Need help moving a couch",
+      category: "Moving",
+    },
+    {
+      id: 2,
+      user: "Sarah M.",
+      rating: 4.8,
+      title: "Looking for homework help",
+      category: "Homework",
+    },
+  ];
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-    }
+  return (
+    <main className="min-h-screen bg-gray-100">
+      <nav className="bg-white border-b px-6 py-4 flex justify-between">
+        <h1 className="text-2xl font-bold">Lavour</h1>
 
-    .topbar {
-      background: black;
-      color: white;
-      padding: 15px;
-      font-size: 20px;
-      font-weight: bold;
-    }
+        <input
+          placeholder="Search favors..."
+          className="border rounded-lg px-4 py-2 w-96"
+        />
 
-    .layout {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-    }
+        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg">
+          Profile
+        </button>
+      </nav>
 
-    .container {
-      width: 1000px;
-      display: flex;
-      gap: 15px;
-    }
+      <div className="grid grid-cols-12 gap-4 p-6">
+        <aside className="col-span-2 bg-white rounded-xl p-4">
+          <h2 className="font-bold mb-3">Categories</h2>
 
-    .sidebar {
-      width: 200px;
-      background: white;
-      padding: 10px;
-      height: fit-content;
-    }
+          <ul className="space-y-2">
+            <li>Technology</li>
+            <li>Homework</li>
+            <li>Gaming</li>
+            <li>Transportation</li>
+            <li>Moving</li>
+            <li>Pets</li>
+          </ul>
+        </aside>
 
-    .main {
-      flex: 1;
-    }
+        <section className="col-span-7">
+          {favors.map((favor) => (
+            <div
+              key={favor.id}
+              className="bg-white p-4 rounded-xl shadow mb-4"
+            >
+              <div className="font-bold">{favor.user}</div>
 
-    .card {
-      background: white;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-    }
+              <div className="text-yellow-500">
+                ⭐ {favor.rating}
+              </div>
 
-    .ad {
-      background: #ddd;
-      padding: 10px;
-      text-align: center;
-      margin-bottom: 10px;
-      border-radius: 6px;
-      font-size: 12px;
-    }
+              <h3 className="text-xl mt-2">
+                {favor.title}
+              </h3>
 
-    input, textarea, select {
-      width: 100%;
-      margin: 5px 0;
-      padding: 8px;
-    }
+              <p className="text-gray-500">
+                {favor.category}
+              </p>
 
-    button {
-      width: 100%;
-      padding: 10px;
-      background: black;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
+              <button className="mt-3 bg-green-600 text-white px-4 py-2 rounded">
+                Accept Favor
+              </button>
+            </div>
+          ))}
+        </section>
 
-    .favor {
-      border-bottom: 1px solid #eee;
-      padding: 10px 0;
-    }
-
-    .smallad {
-      background: #e0e0e0;
-      padding: 8px;
-      text-align: center;
-      font-size: 12px;
-      margin: 10px 0;
-    }
-
-    .category {
-      padding: 5px;
-      cursor: pointer;
-    }
-
-    .category:hover {
-      background: #eee;
-    }
-  </style>
-</head>
-
-<body>
-
-<div class="topbar">Lavour</div>
-
-<div class="layout">
-  <div class="container">
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-      <b>Categories</b>
-      <div class="category" onclick="filter('all')">All</div>
-      <div class="category" onclick="filter('urgent')">Urgent</div>
-      <div class="category" onclick="filter('online')">Online</div>
-      <div class="category" onclick="filter('local')">Local</div>
-
-      <div class="smallad">Ad Space</div>
-    </div>
-
-    <!-- MAIN -->
-    <div class="main">
-
-      <div class="ad">TOP AD SPACE</div>
-
-      <div class="card">
-        <h3>Post a Favor</h3>
-
-        <select id="category">
-          <option value="general">General</option>
-          <option value="urgent">Urgent</option>
-          <option value="online">Online</option>
-          <option value="local">Local</option>
-        </select>
-
-        <input id="title" placeholder="Title">
-        <textarea id="desc" placeholder="Description"></textarea>
-
-        <button onclick="postFavor()">Post</button>
+        <aside className="col-span-3">
+          <div className="bg-white rounded-xl p-4 h-40">
+            Advertisement
+          </div>
+        </aside>
       </div>
-
-      <div class="ad">MIDDLE AD SPACE</div>
-
-      <div class="card">
-        <b>Feed</b>
-        <div id="favors"></div>
-      </div>
-
-    </div>
-
-  </div>
-</div>
-
-<script>
-const API = "http://localhost:3000";
-let currentFilter = "all";
-
-async function loadFavors() {
-  const res = await fetch(API + "/favors");
-  const data = await res.json();
-
-  let filtered = data;
-  if (currentFilter !== "all") {
-    filtered = data.filter(f => f.category === currentFilter);
-  }
-
-  document.getElementById("favors").innerHTML =
-    filtered.map(f => `
-      <div class="favor">
-        <b>${f.title}</b><br>
-        ${f.description}<br>
-        <small>${f.category}</small>
-      </div>
-    `).join("");
+    </main>
+  );
 }
+-- USERS
 
-async function postFavor() {
-  const title = document.getElementById("title").value;
-  const desc = document.getElementById("desc").value;
-  const category = document.getElementById("category").value;
+create table profiles (
+  id uuid primary key,
+  username text unique not null,
+  avatar_url text,
+  bio text,
+  rating numeric default 5.0,
+  completed_favors integer default 0,
+  created_at timestamp default now()
+);
 
-  await fetch(API + "/favors", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({
-      title,
-      description: desc,
-      category
-    })
-  });
+-- FAVORS
 
-  loadFavors();
-}
+create table favors (
+  id uuid primary key default gen_random_uuid(),
+  creator_id uuid references profiles(id),
+  accepted_by uuid references profiles(id),
 
-function filter(type) {
-  currentFilter = type;
-  loadFavors();
-}
+  title text not null,
+  description text not null,
+  category text not null,
+  reward text,
 
-loadFavors();
-</script>
+  status text default 'open',
 
-</body>
-</html>
+  created_at timestamp default now()
+);
+
+-- CONVERSATIONS
+
+create table conversations (
+  id uuid primary key default gen_random_uuid(),
+  favor_id uuid references favors(id),
+  created_at timestamp default now()
+);
+
+-- MESSAGES
+
+create table messages (
+  id uuid primary key default gen_random_uuid(),
+  conversation_id uuid references conversations(id),
+  sender_id uuid references profiles(id),
+
+  content text not null,
+
+  created_at timestamp default now()
+);
+
+-- RATINGS
+
+create table ratings (
+  id uuid primary key default gen_random_uuid(),
+
+  from_user uuid references profiles(id),
+  to_user uuid references profiles(id),
+
+  stars integer check (stars >= 1 and stars <= 5),
+
+  review text,
+
+  created_at timestamp default now()
+);
+
+-- NOTIFICATIONS
+
+create table notifications (
+  id uuid primary key default gen_random_uuid(),
+
+  user_id uuid references profiles(id),
+
+  title text,
+  content text,
+
+  is_read boolean default false,
+
+  created_at timestamp default now()
+);
