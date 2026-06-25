@@ -1,76 +1,54 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>FavorBank</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 20px;
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        .favor {
-            border: 1px solid #ccc;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-        }
-
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-        }
-
-        button {
-            padding: 10px 15px;
-            cursor: pointer;
-        }
-    </style>
+  <title>Lavour</title>
 </head>
 <body>
 
-    <h1>FavorBank</h1>
-    <p>Offer a favor today. Claim one when you need help.</p>
+  <h1>Lavour</h1>
 
-    <h2>Post a Favor</h2>
+  <h2>Post a Favor</h2>
 
-    <input type="text" id="name" placeholder="Your name">
-    <textarea id="favorText" placeholder="What favor are you offering?"></textarea>
-    <button onclick="addFavor()">Post Favor</button>
+  <input id="title" placeholder="Title">
+  <br><br>
+  <textarea id="desc" placeholder="Description"></textarea>
+  <br><br>
+  <button onclick="postFavor()">Post</button>
 
-    <h2>Available Favors</h2>
-    <div id="favorList"></div>
+  <h2>Favors</h2>
+  <div id="favors"></div>
 
-    <script>
-        function addFavor() {
-            const name = document.getElementById("name").value;
-            const favor = document.getElementById("favorText").value;
+<script>
+const API = "http://localhost:3000";
 
-            if (!name || !favor) {
-                alert("Fill in all fields.");
-                return;
-            }
+async function loadFavors() {
+  const res = await fetch(API + "/favors");
+  const data = await res.json();
 
-            const favorDiv = document.createElement("div");
-            favorDiv.className = "favor";
+  document.getElementById("favors").innerHTML =
+    data.map(f =>
+      `<div style="border:1px solid black; margin:5px; padding:5px;">
+        <h3>${f.title}</h3>
+        <p>${f.description}</p>
+      </div>`
+    ).join("");
+}
 
-            favorDiv.innerHTML = `
-                <strong>${name}</strong><br>
-                ${favor}
-            `;
+async function postFavor() {
+  const title = document.getElementById("title").value;
+  const description = document.getElementById("desc").value;
 
-            document.getElementById("favorList").prepend(favorDiv);
+  await fetch(API + "/favors", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, description })
+  });
 
-            document.getElementById("name").value = "";
-            document.getElementById("favorText").value = "";
-        }
-    </script>
+  loadFavors();
+}
+
+loadFavors();
+</script>
 
 </body>
 </html>
