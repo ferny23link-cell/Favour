@@ -1,1 +1,76 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><script defer="defer" src="popup.js"></script></head><body><div id="root"></div></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FavorBank</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .favor {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+        }
+
+        button {
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>FavorBank</h1>
+    <p>Offer a favor today. Claim one when you need help.</p>
+
+    <h2>Post a Favor</h2>
+
+    <input type="text" id="name" placeholder="Your name">
+    <textarea id="favorText" placeholder="What favor are you offering?"></textarea>
+    <button onclick="addFavor()">Post Favor</button>
+
+    <h2>Available Favors</h2>
+    <div id="favorList"></div>
+
+    <script>
+        function addFavor() {
+            const name = document.getElementById("name").value;
+            const favor = document.getElementById("favorText").value;
+
+            if (!name || !favor) {
+                alert("Fill in all fields.");
+                return;
+            }
+
+            const favorDiv = document.createElement("div");
+            favorDiv.className = "favor";
+
+            favorDiv.innerHTML = `
+                <strong>${name}</strong><br>
+                ${favor}
+            `;
+
+            document.getElementById("favorList").prepend(favorDiv);
+
+            document.getElementById("name").value = "";
+            document.getElementById("favorText").value = "";
+        }
+    </script>
+
+</body>
+</html>
